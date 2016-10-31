@@ -23,7 +23,7 @@ console.log('Here are new global variables ' + nameInput, courseInput,gradeInput
  * addClicked - Event Handler when user clicks the add button
  */
 
-//note to self... feel free to take the click event from the html and add it here
+
     function addClicked() {
           console.log('We are in the addClicked function ');
           addStudent($('#studentName').val(),$('#course').val(),$('#studentGrade').val());
@@ -35,7 +35,7 @@ console.log('Here are new global variables ' + nameInput, courseInput,gradeInput
 
 /* cancelClicked - Event Handler when user clicks the cancel button, should clear out student form
  */
-//note to self... feel free to take the click event from the html and add it here
+
 function cancelClicked() {
      $('#studentName').val('');
      $('#course').val('');
@@ -56,7 +56,6 @@ function cancelClicked() {
      this.storeStudent = function storeStudent() {
          //student_array.push(this.name,this.course,this.grade);
      }
-
       student_array.push({
             'name' : this.name,
             'course' : this.course,
@@ -85,7 +84,6 @@ function clearAddStudentForm() {
  * @returns {number}
  */
 function calculateAverage(studentgrade) {
-
     var averageGrade = null;
     var gradeTotal = null;
     for (i = 0; i < student_array.length; i++) {
@@ -113,7 +111,7 @@ function updateStudentList() {
           console.log('We are in the updateStudentList function');
 
           var listOfStudents;
-         var deleteStudentRow = $('<button class="btn btn-danger btn-xs">Delete</button>');
+          var deleteStudentRow = $('<button class="btn btn-danger btn-xs">Delete</button>');
     $('tbody').empty();
        for(var i= 0; i < student_array.length; i ++){
 
@@ -124,7 +122,7 @@ function updateStudentList() {
            var deleteStudentRow = $('<button class="btn btn-danger btn-xs">Delete</button>');
 
 
-           /!*var studentDataRow = *!/
+           /*var studentDataRow = */
            studentRow.append(studentNameData);
            studentRow.append(studentCourseData);
            studentRow.append(studentGradeData);
