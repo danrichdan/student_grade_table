@@ -64,6 +64,8 @@ function calculateAverage($studentGrade) {
     averageGrade = gradesTotal / i;
     averageGrade = averageGrade.toFixed(2);
     console.log('Here is the average grade: ' + averageGrade);
+    $('span.avgGrade').text();
+    $('.avgGrade').text(averageGrade);
     return averageGrade;
 };
 
@@ -123,6 +125,17 @@ function addStudentToDom(studentObj) {
     $studentTableRow.appendTo('tbody');
     console.log($studentTableRow);
 };
+
+/**
+ * reset - resets the application to initial state. Global variables reset, DOM get reset to initial load state
+ */
+function reset() {
+    inputIds = null;
+    student_array = [];
+    $('tbody').empty();
+}
+
+
 
 //Listen for the document to load and reset the data to the initial state
 $(document).ready(function(){
