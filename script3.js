@@ -124,21 +124,29 @@ function reset() {
 function deleteButton() {
     $('table').on('click','tr td button',function() {
         console.log('In the delete buttons click event');
-        removeStudent();
+        var $deleteTableRow = $(this).parent();
+        $deleteTableRow = $deleteTableRow.parent();
+        var $tableRowDeletedIndex = $deleteTableRow.attr('data-index');
+        var $textToDelete = $deleteTableRow.children().text();
+        var $tableRowIndex = $( "tr" ).index( this );
+        console.log('This is the row that will be deleted : ', $deleteTableRow, 'this is its index', $tableRowDeletedIndex);
+        console.log('This is the objects value to delete', $textToDelete);
+        removeStudent($deleteTableRow,$tableRowDeletedIndex);
+        //$deleteTableRow.empty();
     });
 };
 
 //removeStudent function that removes the object in the student_array
 // index(element), parent() -- find the parent's index
-function removeStudent(studentObj,index) {
-       console.log('In the removeStudent function');
-       var tableRowIndex = $(this).index($('tr').parent());
-       student_array.indexOf(this.studentObj);
-       console.log('student_array index of this object: ', tableRowIndex);
-       student_array.splice(indexOf(studentObj,1));
-       //remove from the dom $tableRow.remove();
-
-
+function removeStudent($deleteTableRow,$tableRowIndex) {
+       console.log('In the removeStudent function, here is the value for $deleteTableRow : ', $deleteTableRow, ' and' +
+           ' $tableRowDeletedIndex : ', $tableRowIndex);
+       //var tableRowIndex = $(this).index($('tr').parent());
+       //student_array.indexOf(this.studentObj);
+        student_array.splice($tableRowIndex,1);
+        console.log('student_array : ',student_array);
+       //console.log('student_array index of this object: ', tableRowIndex);
+       $deleteTableRow.empty();
 };
 
 //Listen for the document to load and reset the data to the initial state
