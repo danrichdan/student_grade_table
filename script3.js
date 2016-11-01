@@ -132,7 +132,6 @@ function deleteButton() {
         console.log('This is the row that will be deleted : ', $deleteTableRow, 'this is its index', $tableRowDeletedIndex);
         console.log('This is the objects value to delete', $textToDelete);
         removeStudent($deleteTableRow,$tableRowDeletedIndex);
-        //$deleteTableRow.empty();
     });
 };
 
@@ -141,8 +140,6 @@ function deleteButton() {
 function removeStudent($deleteTableRow,$tableRowIndex) {
        console.log('In the removeStudent function, here is the value for $deleteTableRow : ', $deleteTableRow, ' and' +
            ' $tableRowDeletedIndex : ', $tableRowIndex);
-       //var tableRowIndex = $(this).index($('tr').parent());
-       //student_array.indexOf(this.studentObj);
         student_array.splice($tableRowIndex,1);
         console.log('student_array : ',student_array);
        //console.log('student_array index of this object: ', tableRowIndex);
