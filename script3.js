@@ -16,10 +16,10 @@ console.log('Here are the inputIDs: ', inputIds);
 
 //Event Handler when user clicks the add button
 function addClicked() {
-            $addButton.click(function() {
-            console.log('Inside the click handler for the add button.');
-            addStudent($studentName.val(),$course.val(),$studentGrade.val());
-            calculateAverage($studentGrade.val());
+                $addButton.click(function() {
+                console.log('Inside the click handler for the add button.');
+                addStudent($studentName.val(),$course.val(),$studentGrade.val());
+                updateData();
     });
 };
 
@@ -41,8 +41,7 @@ function addStudent($studentName,$course,$studentGrade) {
         grade: $studentGrade
     }
     student_array.push(studentObj);
-    console.log('Here is the new student: ', student_array);
-    addStudentToDom(studentObj);
+    console.log('Here is the student_array: ', student_array);
 };
 
 //clearAddStudentForm - clears out the form values based on inputIds variable
@@ -81,29 +80,16 @@ function updateData() {
 // student-list-container > list-body
 function updateStudentList() {
     console.log('Inside the updateStudentList function');
-    var deleteStudentRow = $('<button class="btn btn-danger btn-xs">Delete</button>');
     $('tbody').empty();
     for(var i= 0; i < student_array.length; i ++) {
-        var studentRow = $('<tr>');
-        var studentNameData = $('<td>').text(student_array[i].name);
-        var studentCourseData = $('<td>').text(student_array[i].course);
-        var studentGradeData = $('<td>').text(student_array[i].grade);
-        var deleteStudentRow = $('<button class="btn btn-danger btn-xs">Delete</button>');
-
-        studentRow.append(studentNameData);
-        studentRow.append(studentCourseData);
-        studentRow.append(studentGradeData);
-        studentRow.append(deleteStudentRow);
-
-        $('tbody').append(studentRow);
-        console.log(studentRow);
-    }
-
+        addStudentToDom(student_array[i],i);
+        console.log('student_array : ', student_array);
+    };
 };
 
 //addStudentToDom - take in a student object, create html elements from the values and then append the elements
 //into the .student_list tbody, @param studentObj
-function addStudentToDom(studentObj) {
+function addStudentToDom(studentObj,index) {
     console.log('Inside the addStudentToDom function');
     clearAddStudentForm();
     //CREATE TABLE CELLS
@@ -111,31 +97,49 @@ function addStudentToDom(studentObj) {
     var $tableCellCourse = $('<td>').html(studentObj.course);
     var $tableCellStudentGrade = $('<td>').html(studentObj.grade);
     var $tableCellDeleteButton = $('<td>');
+
     //DELETE BUTTON
     var $deleteButton = $('<button>').addClass("btn btn-danger btn-xs").text('Delete');
     var $deleteStudentRow = $tableCellDeleteButton.append($deleteButton);
 
     //ADD TABLE CELLS TO ROW
-    var $tableRow = $('<tr>');
+    var $tableRow = $('<tr>').attr('data-index',index);
     var $studentTableRow = $tableRow.append($tableCellStudentName);
     $studentTableRow = $studentTableRow.append($tableCellCourse);
     $studentTableRow = $studentTableRow.append($tableCellStudentGrade);
     $studentTableRow = $studentTableRow.append($deleteStudentRow);
     //ADD ROW TO TABLE BODY
     $studentTableRow.appendTo('tbody');
-    console.log($studentTableRow);
+    console.log('$studentTableRow is : ', $studentTableRow);
 };
 
-/**
- * reset - resets the application to initial state. Global variables reset, DOM get reset to initial load state
- */
+// reset - resets the application to initial state. Global variables reset, DOM get reset to initial load state
 function reset() {
     inputIds = null;
     student_array = [];
     $('tbody').empty();
-}
+};
+
+//Add an anonymous function as the click handler to the dynamically created delete button for each student row - (Event Delegation)
+function deleteButton() {
+    $('table').on('click','tr td button',function() {
+        console.log('In the delete buttons click event');
+        removeStudent();
+    });
+};
+
+//removeStudent function that removes the object in the student_array
+// index(element), parent() -- find the parent's index
+function removeStudent(studentObj,index) {
+       console.log('In the removeStudent function');
+       var tableRowIndex = $(this).index($('tr').parent());
+       student_array.indexOf(this.studentObj);
+       console.log('student_array index of this object: ', tableRowIndex);
+       student_array.splice(indexOf(studentObj,1));
+       //remove from the dom $tableRow.remove();
 
 
+};
 
 //Listen for the document to load and reset the data to the initial state
 $(document).ready(function(){
@@ -152,6 +156,8 @@ $(document).ready(function(){
 
     addClicked();
     cancelClicked();
+    deleteButton();
+
 });
 
 
