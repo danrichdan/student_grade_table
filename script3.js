@@ -18,6 +18,9 @@ console.log('Here are the inputIDs: ', inputIds);
 function addClicked() {
                 $addButton.click(function() {
                 console.log('Inside the click handler for the add button.');
+                    $studentName = $('#studentName');
+                    $course = $('#course');
+                    $studentGrade = $('#studentGrade');
                 addStudent($studentName.val(),$course.val(),$studentGrade.val());
                 updateData();
     });
@@ -70,11 +73,10 @@ function calculateAverage($studentGrade) {
 
 //updateData - centralized function to update the average and call student list update
 function updateData() {
+
     console.log('Inside the updateData function');
-    calculateAverage($studentGrade.val());
     updateStudentList();
 };
-
 
 //updateStudentList - loops through global student array and appends each objects data into the
 // student-list-container > list-body
@@ -128,10 +130,11 @@ function deleteButton() {
         $deleteTableRow = $deleteTableRow.parent();
         var $tableRowDeletedIndex = $deleteTableRow.attr('data-index');
         var $textToDelete = $deleteTableRow.children().text();
-        var $tableRowIndex = $( "tr" ).index( this );
+        var $tableRowIndex = $( "tr" ).index( this ); // maybe try adding 1 aka + 1 -- tried this and it dod not work
         console.log('This is the row that will be deleted : ', $deleteTableRow, 'this is its index', $tableRowDeletedIndex);
         console.log('This is the objects value to delete', $textToDelete);
         removeStudent($deleteTableRow,$tableRowDeletedIndex);
+        $deleteTableRow.empty();
     });
 };
 
@@ -142,8 +145,39 @@ function removeStudent($deleteTableRow,$tableRowIndex) {
            ' $tableRowDeletedIndex : ', $tableRowIndex);
         student_array.splice($tableRowIndex,1);
         console.log('student_array : ',student_array);
-       //console.log('student_array index of this object: ', tableRowIndex);
-       $deleteTableRow.empty();
+};
+
+function getDataFromServer() {
+   $('.btn-md').click(function(){
+        console.log('In the data from server click function');
+       $.ajax({
+           dataType:'json',
+           data: {
+               api_key: 'QBwBMxb8Q8',
+           },
+           method: 'POST',
+           url: "https://s-apis.learningfuze.com/sgt/get",
+
+           success: function(response){
+               if (response) {
+                   var $studentNameData;
+                   var $courseData;
+                   var $studentGradeData;
+                   for(var i = 0; i < response.data.length; i++) {
+                       $studentNameData = response.data[i].name;
+                       $courseData = response.data[i].course;
+                       $studentGradeData = response.data[i].grade;
+                       addStudent($studentNameData,$courseData,$studentGradeData);
+                       updateData();
+                   }
+                   console.log('success');
+                   console.log('Here is the response : ', response);
+                   console.log('Here is the first item in the response : ', response.data[0]);
+               } else {
+                   console.log('failure');
+               }
+           }});
+   });
 };
 
 //Listen for the document to load and reset the data to the initial state
@@ -162,6 +196,7 @@ $(document).ready(function(){
     addClicked();
     cancelClicked();
     deleteButton();
+    getDataFromServer();
 
 });
 
