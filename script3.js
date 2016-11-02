@@ -163,10 +163,12 @@ function getDataFromServer() {
                    var $studentNameData;
                    var $courseData;
                    var $studentGradeData;
+                   var $studentIdData;
                    for(var i = 0; i < response.data.length; i++) {
                        $studentNameData = response.data[i].name;
                        $courseData = response.data[i].course;
                        $studentGradeData = response.data[i].grade;
+                       $studentIdData = response.data[i].id;
                        addStudent($studentNameData,$courseData,$studentGradeData);
                        updateData();
                    }
