@@ -23,7 +23,7 @@ function addClicked() {
                     $course = $('#course');
                     $studentGrade = $('#studentGrade');
                 addStudent($studentName.val(),$course.val(),$studentGrade.val());
-                updateData();
+                //updateData();
     });
 };
 
@@ -96,16 +96,18 @@ function updateStudentList() {
 //addStudentToDom - take in a student object, create html elements from the values and then append the elements
 //into the .student_list tbody, @param studentObj
 function addStudentToDom(studentObj,index) {
-    console.log('Inside the addStudentToDom function');
+    console.log('Inside the addStudentToDom function, here is the current student object : ',studentObj);
     clearAddStudentForm();
     //CREATE TABLE CELLS
+    var studenIdAdd = studentObj.id;
     var $tableCellStudentName = $('<td>').html(studentObj.name);
     var $tableCellCourse = $('<td>').html(studentObj.course);
     var $tableCellStudentGrade = $('<td>').html(studentObj.grade);
     var $tableCellDeleteButton = $('<td>');
-
+    //$tableCellDeleteButton = $tableCellDeleteButton.attr('value',studentObj.id);
+    console.log('Loggin the studentId : ',studenIdAdd);
     //DELETE BUTTON
-    var $deleteButton = $('<button>').addClass("btn btn-danger btn-xs").text('Delete');
+    var $deleteButton = $('<button>').addClass("btn btn-danger btn-xs").text('Delete').attr('name',studentObj.id);
     var $deleteStudentRow = $tableCellDeleteButton.append($deleteButton);
 
     //ADD TABLE CELLS TO ROW
@@ -130,14 +132,17 @@ function reset() {
 function deleteButton() {
     $('table').on('click','tr td button',function() {
         console.log('In the delete buttons click event');
-        var $deleteTableRow = $(this).parent();
-        $deleteTableRow = $deleteTableRow.parent();
+        var stuId = $(this).attr('name');
+        console.log('This is supposed to be the value from the button attribute , new variable called stuId : ',stuId);
+        var $deleteTableRow = $(this).parent();//td of the button
+        $deleteTableRow = $deleteTableRow.parent();//tr of the button
         var $tableRowDeletedIndex = $deleteTableRow.attr('data-index');
         var $textToDelete = $deleteTableRow.children().text();
         var $tableRowIndex = $( "tr" ).index( this ); // maybe try adding 1 aka + 1 -- tried this and it dod not work
         console.log('This is the row that will be deleted : ', $deleteTableRow, 'this is its index', $tableRowDeletedIndex);
         console.log('This is the objects value to delete', $textToDelete);
         removeStudent($deleteTableRow,$tableRowDeletedIndex);
+        deleteStudentFromServer($studentId);
         $deleteTableRow.empty();
     });
 };
@@ -204,6 +209,7 @@ $(document).ready(function(){
     deleteButton();
     getDataFromServer();
 
+
 });
 
 var currentStudent = student_array.length -1;
@@ -232,6 +238,7 @@ function sendDataToServer($studentName,$course,$studentGrade,$studentId) {
                 student_array[currentStudent].id = $studentId;
                 console.log('Here is the new array after adding the id : ',student_array);
                 console.log('This is the success response from the ajax call in the sendDataToServer function: ',response.success);
+                updateData();
             } else {
                 console.log('failure');
             }
@@ -239,7 +246,26 @@ function sendDataToServer($studentName,$course,$studentGrade,$studentId) {
         });
 };
 
+function deleteStudentFromServer($studentId) {
+    console.log('In the deleteStudentFromServer function');
+    $.ajax({
+        dataType: 'json',
+        data: {
+            api_key: 'QBwBMxb8Q8',
+            student_id: $studentId
+        },
+        method: 'POST',
+        url: "https://s-apis.learningfuze.com/sgt/delete",
 
+        success: function (response) {
+            if(response) {
+                console.log('In the success function of the ajax function to deleteStudentFromServer');
+                console.log(response.success);
+            }
+        }
+
+    })
+}
 
 
 
