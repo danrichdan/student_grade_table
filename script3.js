@@ -2,6 +2,7 @@
     var $studentName;
     var $course;
     var $studentGrade;
+    var $studentId;
 
     var $addButton;
     var $cancelButton;
@@ -36,12 +37,15 @@ function cancelClicked() {
 
 //addStudent - creates a student objects based on input fields in the form and adds the object to global student array
 //@return undefined
-function addStudent($studentName,$course,$studentGrade) {
+function addStudent($studentName,$course,$studentGrade,$studentId) {
     console.log('Inside the addStudent function');
+    sendDataToServer($studentName,$course,$studentGrade,$studentId);
+    currentStudent++;
     var studentObj = {
         name: $studentName,
         course: $course,
-        grade: $studentGrade
+        grade: $studentGrade,
+        id: $studentId
     }
     student_array.push(studentObj);
     console.log('Here is the student_array: ', student_array);
@@ -202,8 +206,38 @@ $(document).ready(function(){
 
 });
 
+var currentStudent = student_array.length -1;
+function sendDataToServer($studentName,$course,$studentGrade,$studentId) {
+    console.log('In the sendDataToServer function');
 
+    $.ajax({
+        dataType: 'json',
+        data: {
+            api_key: 'QBwBMxb8Q8',
+            name: $studentName,
+            course: $course,
+            grade: $studentGrade,
+            id: $studentId
+        },
+        method: 'POST',
+        url: "https://s-apis.learningfuze.com/sgt/create",
 
+        success: function (response) {
+            if (response) {
+
+                console.log('In the success function of the ajax function to sendDataToServer');
+                console.log('Here is the response : ', response);
+                console.log('Here is the new_id in the response : ', response.new_id);
+                $studentId = response.new_id;
+                student_array[currentStudent].id = $studentId;
+                console.log('Here is the new array after adding the id : ',student_array);
+                console.log('This is the success response from the ajax call in the sendDataToServer function: ',response.success);
+            } else {
+                console.log('failure');
+            }
+        }
+        });
+};
 
 
 
