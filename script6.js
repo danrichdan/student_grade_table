@@ -4,14 +4,16 @@ var $course;
 var $studentGrade;
 var $studentId;
 
-
 var $addButton;
 var $cancelButton;
+var currentStudent;
+var student_array;
 
 //global array to hold student objects,@type {Array}
-var student_array = [];
+student_array = [];
 console.log('Here is the new student: ', student_array);
-var currentStudent = student_array.length -1;
+currentStudent = student_array.length -1;
+
 //id's of the elements that are used to add students, @type {string[]}
 var inputIds;
 console.log('Here are the inputIDs: ', inputIds);

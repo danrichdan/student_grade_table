@@ -158,7 +158,7 @@ function removeStudent($deleteTableRow,$tableRowIndex) {
 };
 
 function getDataFromServer() {
-   $('.btn-md').click(function(){
+ $('.btn-md').click(function(){
         console.log('In the data from server click function');
        $.ajax({
            dataType:'json',
@@ -189,7 +189,7 @@ function getDataFromServer() {
                    console.log('failure');
                }
            }});
-   });
+});
 };
 
 //Listen for the document to load and reset the data to the initial state
@@ -263,8 +263,8 @@ function deleteStudentFromServer($studentId) {
             }
         }
 
-    })
-}
+    });
+};
 
 
 
