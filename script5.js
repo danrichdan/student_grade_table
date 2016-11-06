@@ -1,30 +1,30 @@
 //Define all global variables here
-    var $studentName;
-    var $course;
-    var $studentGrade;
-    var $studentId;
+var $studentName;
+var $course;
+var $studentGrade;
+var $studentId;
 
 
-    var $addButton;
-    var $cancelButton;
+var $addButton;
+var $cancelButton;
 
 //global array to hold student objects,@type {Array}
-    var student_array = [];
-    console.log('Here is the new student: ', student_array);
+var student_array = [];
+console.log('Here is the new student: ', student_array);
 var currentStudent = student_array.length -1;
 //id's of the elements that are used to add students, @type {string[]}
-    var inputIds;
+var inputIds;
 console.log('Here are the inputIDs: ', inputIds);
 
 //Event Handler when user clicks the add button
 function addClicked() {
-                $addButton.click(function() {
-                console.log('Inside the click handler for the add button.');
-                    $studentName = $('#studentName');
-                    $course = $('#course');
-                    $studentGrade = $('#studentGrade');
-                addStudent($studentName.val(),$course.val(),$studentGrade.val());
-                //updateData();
+    $addButton.click(function() {
+        console.log('Inside the click handler for the add button.');
+        $studentName = $('#studentName');
+        $course = $('#course');
+        $studentGrade = $('#studentGrade');
+        sendDataToServer($studentName.val(),$course.val(),$studentGrade.val());
+        //updateData();
     });
 };
 
@@ -40,8 +40,8 @@ function cancelClicked() {
 //@return undefined
 function addStudent($studentName,$course,$studentGrade,$studentId) {
     console.log('Inside the addStudent function');
-    sendDataToServer($studentName,$course,$studentGrade,$studentId);
-    currentStudent++;
+
+
     var studentObj = {
         name: $studentName,
         course: $course,
@@ -61,7 +61,7 @@ function clearAddStudentForm(){
 };
 
 // calculateAverage - loop through the global student array and calculate average grade and return that value
- //@returns {number}
+//@returns {number}
 function calculateAverage($studentGrade) {
     var gradesTotal = null;
     var averageGrade = null;
@@ -151,45 +151,46 @@ function deleteButton() {
 //removeStudent function that removes the object in the student_array
 // index(element), parent() -- find the parent's index
 function removeStudent($deleteTableRow,$tableRowIndex) {
-       console.log('In the removeStudent function, here is the value for $deleteTableRow : ', $deleteTableRow, ' and' +
-           ' $tableRowDeletedIndex : ', $tableRowIndex);
-        student_array.splice($tableRowIndex,1);
-        console.log('student_array : ',student_array);
+    console.log('In the removeStudent function, here is the value for $deleteTableRow : ', $deleteTableRow, ' and' +
+        ' $tableRowDeletedIndex : ', $tableRowIndex);
+    student_array.splice($tableRowIndex,1);
+    console.log('student_array : ',student_array);
 };
 
 function getDataFromServer() {
-   $('.btn-md').click(function(){
+    $('.btn-md').click(function(){
         console.log('In the data from server click function');
-       $.ajax({
-           dataType:'json',
-           data: {
-               api_key: 'QBwBMxb8Q8',
-           },
-           method: 'POST',
-           url: "https://s-apis.learningfuze.com/sgt/get",
+        $.ajax({
+            dataType:'json',
+            data: {
+                api_key: 'QBwBMxb8Q8',
+            },
+            method: 'POST',
+            url: "https://s-apis.learningfuze.com/sgt/get",
 
-           success: function(response){
-               if (response) {
-                   var $studentNameData;
-                   var $courseData;
-                   var $studentGradeData;
-                   var $studentIdData;
-                   for(var i = 0; i < response.data.length; i++) {
-                       $studentNameData = response.data[i].name;
-                       $courseData = response.data[i].course;
-                       $studentGradeData = response.data[i].grade;
-                       $studentIdData = response.data[i].id;
-                       addStudent($studentNameData,$courseData,$studentGradeData);
-                       updateData();
-                   }
-                   console.log('success');
-                   console.log('Here is the response : ', response);
-                   console.log('Here is the first item in the response : ', response.data[0]);
-               } else {
-                   console.log('failure');
-               }
-           }});
-   });
+            success: function(response){
+                if (response) {
+                    addStudent($studentNameData,$courseData,$studentGradeData);
+                    var $studentNameData;
+                    var $courseData;
+                    var $studentGradeData;
+                    var $studentIdData;
+                    for(var i = 0; i < response.data.length; i++) {
+                        $studentNameData = response.data[i].name;
+                        $courseData = response.data[i].course;
+                        $studentGradeData = response.data[i].grade;
+                        $studentIdData = response.data[i].id;
+
+                        updateData();
+                    }
+                    console.log('success');
+                    console.log('Here is the response : ', response);
+                    console.log('Here is the first item in the response : ', response.data[0]);
+                } else {
+                    console.log('failure');
+                }
+            }});
+    });
 };
 
 //Listen for the document to load and reset the data to the initial state
@@ -216,6 +217,7 @@ $(document).ready(function(){
 
 function sendDataToServer($studentName,$course,$studentGrade,$studentId) {
     console.log('In the sendDataToServer function');
+
     $.ajax({
         dataType: 'json',
         data: {
@@ -230,19 +232,22 @@ function sendDataToServer($studentName,$course,$studentGrade,$studentId) {
 
         success: function (response) {
             if (response) {
+                addStudent($studentName,$course,$studentGrade,$studentId);
+                updateData();
                 console.log('In the success function of the ajax function to sendDataToServer');
                 console.log('Here is the response : ', response);
                 console.log('Here is the new_id in the response : ', response.new_id);
                 $studentId = response.new_id;
+                currentStudent++;
                 student_array[currentStudent].id = $studentId;
                 console.log('Here is the new array after adding the id : ',student_array);
                 console.log('This is the success response from the ajax call in the sendDataToServer function: ',response.success);
-                updateData();
+
             } else {
                 console.log('failure');
             }
         }
-        });
+    });
 };
 
 function deleteStudentFromServer($studentId) {
