@@ -1,3 +1,5 @@
+//Global Variables
+
 var $studentName;
 var $course;
 var $studentGrade;
@@ -230,7 +232,6 @@ $(document).ready(function(){
         $studentGrade
     ];
     applyClickHandlers();
-    // getDataFromServer();
     updateData();
 });
 
