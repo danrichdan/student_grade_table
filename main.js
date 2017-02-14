@@ -26,12 +26,13 @@ var inputIds;
 
 console.log('Here are the inputIDs: ', inputIds);
 
+
 /*
  * addClicked - Event Handler when user clicks the add button
  */
 function addClicked() {
         console.log('Inside the click handler for the add button.');
-    if($studentName.val() === ''|| $course.val() === '' || $studentGrade.val() === NaN) {
+    if($studentName.val() === ''|| $course.val() === ''|| $studentGrade.val() === '') {
         alert("Please enter a valid name, course, and grade");
     } else {
         addStudent($studentName.val(),$course.val(),$studentGrade.val());
@@ -132,26 +133,49 @@ function addStudentToDom(studentObj,index) {
     console.log('Inside the addStudentToDom function, here is the current student object : ',studentObj);
     clearAddStudentForm();
     //CREATE TABLE CELLS
-    var studenIdAdd = studentObj.id;
+    var $tableRow = $('<tr>');
+    var $deleteButton = $('<button>', {
+        class: "btn btn-danger btn-xs",
+        text: 'Delete',
+        'index-name': index
+    });
+    studentObj.id = index;
+    var studentIdAdd = studentObj.id;
     var $tableCellStudentName = $('<td>').html(studentObj.name);
     var $tableCellCourse = $('<td>').html(studentObj.course);
     var $tableCellStudentGrade = $('<td>').html(studentObj.grade);
     var $tableCellDeleteButton = $('<td>');
-    //$tableCellDeleteButton = $tableCellDeleteButton.attr('value',studentObj.id);
-    console.log('Loggin the studentId : ',studenIdAdd);
-    //DELETE BUTTON
-    var $deleteButton = $('<button>').addClass("btn btn-danger btn-xs").text('Delete').attr('name',studentObj.id);
-    var $deleteStudentRow = $tableCellDeleteButton.append($deleteButton);
 
+    console.log('Loggin the studentId : ',studentIdAdd);
+    //DELETE BUTTON
+    var $deleteStudentRow = $tableCellDeleteButton.append($deleteButton);
     //ADD TABLE CELLS TO ROW
-    var $tableRow = $('<tr>').attr('data-index',index);
-    var $studentTableRow = $tableRow.append($tableCellStudentName);
-    $studentTableRow = $studentTableRow.append($tableCellCourse);
-    $studentTableRow = $studentTableRow.append($tableCellStudentGrade);
-    $studentTableRow = $studentTableRow.append($deleteStudentRow);
+    var $studentTableRow = $tableRow.append($tableCellStudentName).append($tableCellCourse);
+    $studentTableRow = $studentTableRow.append($tableCellStudentGrade).append($deleteStudentRow);
     //ADD ROW TO TABLE BODY
     $studentTableRow.appendTo('tbody');
     console.log('$studentTableRow is : ', $studentTableRow);
+};
+
+
+//Add an anonymous function as the click handler to the dynamically created delete button for each student row - (Event Delegation)
+function applyClickHandlers() {
+    $('.btn-primary:first-of-type').click(addClicked);
+    $('.btn-default').click(cancelClicked);
+    $('table.student-list').on('click', '.btn-danger', function () {
+        var delete_student = $(this).attr('index-name');
+        console.log(delete_student);
+        removeStudent(delete_student);
+    });
+    $('.btn-primary:last-of-type').click(getDataFromServer);
+
+};
+
+//removeStudent function that removes the object in the student_array
+// index(element), parent() -- find the parent's index
+function removeStudent(index) {
+    student_array.splice(index,1);
+    updateData();
 };
 
 /**
@@ -163,12 +187,28 @@ function reset() {
     $('tbody').empty();
 };
 
-
-//Add an anonymous function as the click handler to the dynamically created delete button for each student row - (Event Delegation)
-
-
-//removeStudent function that removes the object in the student_array
-// index(element), parent() -- find the parent's index
+function getDataFromServer() {
+    $.ajax({
+        dataType: 'JSON',
+        data: {api_key: 'QBwBMxb8Q8'},
+        method: 'POST',
+        url: 'https://s-apis.learningfuze.com/sgt/get',
+        success: function (response) {
+            if (response.success) {
+                console.log('success!!');
+                var ajax_array = response.data;
+                console.log('From DB', ajax_array);
+                for (var i = 0; i < ajax_array.length; i++) {
+                    student_array.push(ajax_array[i]);
+                }
+                updateData();
+            } else {
+                alert('Unable to retrieve data');
+                console.log(response.errors);
+            }
+        }
+    });
+};
 
 
 /**
@@ -185,7 +225,7 @@ $(document).ready(function(){
         $course,
         $studentGrade
     ];
-
+    applyClickHandlers();
 });
 
 
@@ -195,8 +235,6 @@ $(document).ready(function(){
 //
 
 // JS Functionality
-// Build out all functions & variables based on jsDoc (What is this?) comments inside the script.js file
-// Form
 
 // on Dom Load
 // Reset application to its default state
@@ -207,28 +245,13 @@ $(document).ready(function(){
 //v0.5
 // Scope
 //
-// JS Functionality
-// Add an anonymous function as the click handler to the dynamically created delete button for each student row - (Event Delegation)
-// Delete button click handler function should have a call to removeStudent function that removes the object in the student_array
-// Suggested method
-// Using index of the row of the current button to remove from array
-// Store the index when adding to the DOM into a data attribute
-// Once the object has been removed from the array, remove the DOM element that is the parent of the delete button that was clicked.
+// J
 
 // v1.0
 // Scope
 //
-// HTML
-// In the index.html file add a third button below the add and cancel buttons
-// Make sure the button has the same styling as the other two and fits in with the overall design
-// The button should say something along the lines of "Get data From Server"
+
 // JS Functionality
-// Add a click handler to your newly created button
-// Using the LearningFuze SGT API pull records from the DB using an AJAX call
-// With the object you get back from the API find the proper data to add to your SGT
-// API URL: s-apis.learningfuze.com/sgt/get
-// input: api_key: (string) your api key
-// output: success: (boolean) whether the operation succeeded data: (array) every student available on the database
 
 // V2.0
 // Scope
@@ -260,4 +283,5 @@ $(document).ready(function(){
 // output:
 //     success: (boolean) whether the operation succeeded
 // errors (optional): (array) an array with all errors that occurred
+//
 
