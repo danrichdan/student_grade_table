@@ -1,7 +1,5 @@
-# SGT - Student Grade Table
+# Version 0.1
 
-## Version 0.1
-#### Description
 Version 0.1 is the starting point of the Student Grade Table Project. LearningFuze has provided a base structure that
 includes HTML structure that will need to be updated with boostrap classes. For this version we are looking to see that you
 understand how to style an application with bootstrap, take input values and apply them to objects, and update the DOM
@@ -31,6 +29,7 @@ Version 1.0 picks up where 0.5 left off. You will now be populating records from
 ## Version 2.0
 #### Description
 Version 2.0 adds more CRUD functionality.  Previously you added R (Read), and now you will be adding Create and Delete functionality. You will now be adding records to a database via the LearningFuze SGT API.
+
 
 - <a href="https://github.com/Learning-Fuze/SGT/tree/v2.0lf#getting-started" target="_blank">Getting Started</a>
 - <a href="https://github.com/Learning-Fuze/SGT/tree/v2.0lf#scope" target="_blank">View Scope</a>
