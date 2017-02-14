@@ -41,7 +41,6 @@ function cancelClicked() {
 function addStudent($studentName,$course,$studentGrade,$studentId) {
     console.log('Inside the addStudent function');
 
-
     var studentObj = {
         name: $studentName,
         course: $course,
