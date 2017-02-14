@@ -219,9 +219,6 @@ function reset() {
     inputIds = null;
     student_array = [];
     $('tbody').empty();
-};
-
-function getDataFromServer() {
     $.ajax({
         dataType: 'JSON',
         data: {api_key: 'QBwBMxb8Q8'},
@@ -232,9 +229,9 @@ function getDataFromServer() {
                 console.log('success!!');
                 var ajax_array = response.data;
                 for (var i = 0; i < ajax_array.length; i++) {
-                    student_array.push(ajax_array);
-                };
-
+                    student_array.push(ajax_array[i]);
+                }
+                updateData();
             } else {
                 alert('Unable to retrieve data');
                 console.log(response.errors);
@@ -242,6 +239,28 @@ function getDataFromServer() {
         }
     });
 };
+
+// function getDataFromServer() {
+//     $.ajax({
+//         dataType: 'JSON',
+//         data: {api_key: 'QBwBMxb8Q8'},
+//         method: 'POST',
+//         url: 'https://s-apis.learningfuze.com/sgt/get',
+//         success: function (response) {
+//             if (response.success) {
+//                 console.log('success!!');
+//                 var ajax_array = response.data;
+//                 for (var i = 0; i < ajax_array.length; i++) {
+//                     student_array.push(ajax_array[i]);
+//                 }
+//
+//             } else {
+//                 alert('Unable to retrieve data');
+//                 console.log(response.errors);
+//             }
+//         }
+//     });
+// };
 
 /**
  * Listen for the document to load and reset the data to the initial state
@@ -258,7 +277,7 @@ $(document).ready(function(){
         $studentGrade
     ];
     applyClickHandlers();
-    getDataFromServer();
+    // getDataFromServer();
     updateData();
 });
 
