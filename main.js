@@ -1,7 +1,3 @@
-/**
- * Define all global variables here
- */
-
 var $studentName;
 var $course;
 var $studentGrade;
@@ -125,7 +121,6 @@ function updateData() {
     calculateAverage();
 }
 
-
 /**
  * updateStudentList - loops through global student array and appends each objects data into the student-list-container > list-body
  */
@@ -172,7 +167,6 @@ function addStudentToDom(studentObj,index) {
     console.log('$studentTableRow is : ', $studentTableRow);
 };
 
-
 //Add an anonymous function as the click handler to the dynamically created delete button for each student row - (Event Delegation)
 function applyClickHandlers() {
     $('.btn-primary:first-of-type').click(addClicked);
@@ -182,8 +176,6 @@ function applyClickHandlers() {
         console.log(delete_student);
         removeStudent(delete_student);
     });
-    // $('.btn-primary:last-of-type').click(getDataFromServer);
-
 };
 
 //removeStudent function that removes the object in the student_array
@@ -191,25 +183,8 @@ function applyClickHandlers() {
 function removeStudent(index) {
     //create object to send to DB
     console.log('Index of ID to be removed', index);
-    var deleteData = {
-        api_key: 'QBwBMxb8Q8',
-        student_id: student_array[index].id
-    };
-    $.ajax({
-        dataType: 'JSON',
-        data: deleteData,
-        url: 'https://s-apis.learningfuze.com/sgt/delete',
-        method: 'POST',
-        success: function (response) {
-            if (response.success) {
-                student_array.splice(index, 1);
-                updateData();
-            } else {
-                alert('Failed to delete, you are not authorized.');
-                console.log(response['errors']);
-            }
-        }
-    });
+    student_array.splice(index, 1);
+    updateData();
 };
 
 /**
@@ -240,28 +215,6 @@ function reset() {
     });
 };
 
-// function getDataFromServer() {
-//     $.ajax({
-//         dataType: 'JSON',
-//         data: {api_key: 'QBwBMxb8Q8'},
-//         method: 'POST',
-//         url: 'https://s-apis.learningfuze.com/sgt/get',
-//         success: function (response) {
-//             if (response.success) {
-//                 console.log('success!!');
-//                 var ajax_array = response.data;
-//                 for (var i = 0; i < ajax_array.length; i++) {
-//                     student_array.push(ajax_array[i]);
-//                 }
-//
-//             } else {
-//                 alert('Unable to retrieve data');
-//                 console.log(response.errors);
-//             }
-//         }
-//     });
-// };
-
 /**
  * Listen for the document to load and reset the data to the initial state
  */
@@ -282,29 +235,4 @@ $(document).ready(function(){
 });
 
 
-
-//v0.1
-// Scope
-//
-
-// JS Functionality
-
-// on Dom Load
-// Reset application to its default state
-
-
-//     JS Functionality
-// Activate the load function (from the DB, made in v1.0) on document load.
-//     Ensure that your load function records the student's ID, given to you by the database. This will be important for future interaction with the student, such as deletion or updating.
-
-//     On deleting a student, also request the deletion of the student on the database
-// API URL: s-apis.learningfuze.com/sgt/delete
-//     method: post
-// input:
-//     api_key: (string) your api key
-// student_id: (number) the ID of the student within the database
-// output:
-//     success: (boolean) whether the operation succeeded
-// errors (optional): (array) an array with all errors that occurred
-//
 
