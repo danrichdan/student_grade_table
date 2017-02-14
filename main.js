@@ -189,8 +189,27 @@ function applyClickHandlers() {
 //removeStudent function that removes the object in the student_array
 // index(element), parent() -- find the parent's index
 function removeStudent(index) {
-    student_array.splice(index,1);
-    updateData();
+    //create object to send to DB
+    console.log('Index of ID to be removed', index);
+    var deleteData = {
+        api_key: 'QBwBMxb8Q8',
+        student_id: student_array[index].id
+    };
+    $.ajax({
+        dataType: 'JSON',
+        data: deleteData,
+        url: 'https://s-apis.learningfuze.com/sgt/delete',
+        method: 'POST',
+        success: function (response) {
+            if (response.success) {
+                student_array.splice(index, 1);
+                updateData();
+            } else {
+                alert('Failed to delete, you are not authorized.');
+                console.log(response['errors']);
+            }
+        }
+    });
 };
 
 /**
@@ -212,11 +231,10 @@ function getDataFromServer() {
             if (response.success) {
                 console.log('success!!');
                 var ajax_array = response.data;
-                console.log('From DB', ajax_array);
                 for (var i = 0; i < ajax_array.length; i++) {
-                    student_array.push(ajax_array[i]);
-                }
-                updateData();
+                    student_array.push(ajax_array);
+                };
+
             } else {
                 alert('Unable to retrieve data');
                 console.log(response.errors);
@@ -230,7 +248,7 @@ function getDataFromServer() {
  */
 $(document).ready(function(){
     reset();
-    updateData();
+
     $studentName = $('#studentName');
     $course = $('#course');
     $studentGrade = $('#studentGrade');
@@ -241,6 +259,7 @@ $(document).ready(function(){
     ];
     applyClickHandlers();
     getDataFromServer();
+    updateData();
 });
 
 
