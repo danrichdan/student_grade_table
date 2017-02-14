@@ -5,11 +5,10 @@
 var $studentName;
 var $course;
 var $studentGrade;
-var  $studentId;
+var $studentId;
 
 var $addButton = $('div.form-group:last-of-type+button:first-of-type');
 var $cancelButton = $('div.form-group:last-of-type+button:first-of-type+button:last-of-type');
-
 
 /**
  * student_array - global array to hold student objects
@@ -23,9 +22,7 @@ console.log('Here is the new student: ', student_array);
  * @type {string[]}
  */
 var inputIds;
-
 console.log('Here are the inputIDs: ', inputIds);
-
 
 /*
  * addClicked - Event Handler when user clicks the add button
@@ -40,14 +37,12 @@ function addClicked() {
     }
 };
 
-
 /* cancelClicked - Event Handler when user clicks the cancel button, should clear out student form
  */
 function cancelClicked() {
     console.log('Inside the click handler for the cancel button.');
     clearAddStudentForm();
 };
-
 
 /*
  * addStudent - creates a student objects based on input fields in the form and adds the object to global student array
@@ -65,9 +60,30 @@ function addStudent($studentName,$course,$studentGrade) {
     };
     student_array.push(studentObj);
     console.log('Here is the student_array: ', student_array);
+    sendStudentToDatabase(studentObj);
     updateData();
 };
 
+function sendStudentToDatabase(studentToAdd) {
+    var sendData = studentToAdd;
+    sendData['api_key'] = 'QBwBMxb8Q8';
+    $.ajax({
+        method: 'POST',
+        url: 'https://s-apis.learningfuze.com/sgt/create',
+        data: sendData,
+        dataType: 'JSON',
+        success: function (response) {
+            console.log(response.success, response.new_id);
+            if (response.success) {
+                studentToAdd['id'] = response.new_id;
+                student_array.push(studentToAdd);
+            } else {
+                alert('Unable to add student.');
+                console.log(response.errors);
+            }
+        }
+    });
+};
 
 /*
  * clearAddStudentForm - clears out the form values based on inputIds variable
@@ -78,7 +94,6 @@ function clearAddStudentForm(){
         inputIds[i].val('');
     };
 };
-
 
 /*
  * calculateAverage - loop through the global student array and calculate average grade and return that value
@@ -167,7 +182,7 @@ function applyClickHandlers() {
         console.log(delete_student);
         removeStudent(delete_student);
     });
-    $('.btn-primary:last-of-type').click(getDataFromServer);
+    // $('.btn-primary:last-of-type').click(getDataFromServer);
 
 };
 
@@ -210,7 +225,6 @@ function getDataFromServer() {
     });
 };
 
-
 /**
  * Listen for the document to load and reset the data to the initial state
  */
@@ -226,6 +240,7 @@ $(document).ready(function(){
         $studentGrade
     ];
     applyClickHandlers();
+    getDataFromServer();
 });
 
 
@@ -239,41 +254,11 @@ $(document).ready(function(){
 // on Dom Load
 // Reset application to its default state
 
-// Display all student data stored in the student_array inside the bootstrap table structure
 
-
-//v0.5
-// Scope
-//
-// J
-
-// v1.0
-// Scope
-//
-
-// JS Functionality
-
-// V2.0
-// Scope
-//
-// HTML
-// (optional) Add a modal to handle error messages, if doing optional error handling
-// (optional) Add button "waiting" marker of some sort. For example a spinner. Spinner should conceivably be placed in or on the button. This is for optional error handling.
 //     JS Functionality
 // Activate the load function (from the DB, made in v1.0) on document load.
 //     Ensure that your load function records the student's ID, given to you by the database. This will be important for future interaction with the student, such as deletion or updating.
-// On creating a new student, also send the new student data to the server
-// API URL: s-apis.learningfuze.com/sgt/create
-// method: post
-// input:
-//     api_key: (string) your api key
-// name: (string) the student's name
-// course: (string) the course the student is taking
-// grade: (number) the student's grade for the course
-// output:
-//     success: (boolean) whether the operation succeeded
-// errors (optional): (array) an array with all errors that occurred
-// new_id: (number) The ID of the new student in the database.
+
 //     On deleting a student, also request the deletion of the student on the database
 // API URL: s-apis.learningfuze.com/sgt/delete
 //     method: post
