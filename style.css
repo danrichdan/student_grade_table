@@ -1,0 +1,17 @@
+tr:nth-of-type(even) {
+    background-color: #e6e6e6;
+}
+
+/*MEDIA QUERY*/
+
+@media (min-width: 349px) and (max-width: 374px) {
+    .table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+        padding: 4px;
+    }
+}
+
+@media (min-width: 320px) and (max-width: 348px) {
+    .table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+        padding: 2px;
+    }
+}

@@ -1,21 +1,23 @@
 <!doctype html>
 <html>
 <head>
+    <meta name="viewport" content="initial-scale=1, user-scalable=no">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.7.3/firebase.js"></script>
     <script src="main.js"></script>
-    <meta name="viewport" content="initial-scale=1, user-scalable=no">
 </head>
 <body>
 <div class="container">
     <!----FORM---->
     <div class="row page-header">
-        <!-- only show this element when the user isnt on mobile -->
+        <!-- only shows this element when the user isnt on mobile -->
         <h1 class="col-md-12 hidden-sm hidden-xs">Student Grade Table
             <small class="pull-right">Grade Average : <span class="avgGrade label label-default"></span></small>
         </h1>
-        <!-- only show this element when the user gets to a mobile version -->
+        <!-- only shows this element when the user gets to a mobile version -->
         <h3 class="col-xs-12 hidden-md hidden-lg">Student Grade Table
             <small class="pull-right">Grade Average : <span class="avgGrade label label-default"></span></small>
         </h3>
@@ -43,7 +45,7 @@
             <input type="text" class="form-control" name="studentGrade" id="studentGrade"
                    placeholder="Student Grade" value="">
         </div>
-        <button type="button" class="btn btn-success btn-primary">Add</button>
+        <button type="button" id="add-student" class="btn btn-success btn-primary">Add</button>
         <button type="button" class="btn btn-default">Cancel</button>
 
     </div>
