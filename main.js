@@ -1,220 +1,203 @@
 //Global Variables
-
 var $studentName;
 var $course;
 var $studentGrade;
-var $studentId;
-
-var $addButton = $('div.form-group:last-of-type+button:first-of-type');
-var $cancelButton = $('div.form-group:last-of-type+button:first-of-type+button:last-of-type');
-
-/**
- * student_array - global array to hold student objects
- * @type {Array}
- */
-var student_array = [];
-console.log('Here is the new student: ', student_array);
 
 /**
  * inputIds - id's of the elements that are used to add students
  * @type {string[]}
  */
 var inputIds;
-console.log('Here are the inputIDs: ', inputIds);
+
+/*
+ * FIREBASE
+ */
+// Adds Firebase config data
+var config = {
+    apiKey: "AIzaSyAPqciv9eDuorGWqwu3U5DP7DcthjEH5Rc",
+    authDomain: "student-grade-table-1f915.firebaseapp.com",
+    databaseURL: "https://student-grade-table-1f915.firebaseio.com",
+    storageBucket: "student-grade-table-1f915.appspot.com",
+    messagingSenderId: "436578119423"
+};
+// Initializes Firebase
+firebase.initializeApp(config);
+// Creates firebase ref
+var fbRef = firebase.database();
+// Creates event listener for the students node in database
+fbRef.ref('students').on('value', function(snapshot){
+    addStudentsToDom(snapshot.val());
+});
 
 /*
  * addClicked - Event Handler when user clicks the add button
  */
 function addClicked() {
-        console.log('Inside the click handler for the add button.');
     if($studentName.val() === ''|| $course.val() === ''|| $studentGrade.val() === '') {
         alert("Please enter a valid name, course, and grade");
     } else {
-        addStudent($studentName.val(),$course.val(),$studentGrade.val());
+        var studentGrade = parseInt($studentGrade.val());
+        addStudent($studentName.val(),$course.val(),studentGrade);
         clearAddStudentForm();
-    }
-};
-
-/* cancelClicked - Event Handler when user clicks the cancel button, should clear out student form
- */
-function cancelClicked() {
-    console.log('Inside the click handler for the cancel button.');
-    clearAddStudentForm();
+    };
 };
 
 /*
- * addStudent - creates a student objects based on input fields in the form and adds the object to global student array
- *
- * @return undefined
+ * addStudent - creates a student object based on input fields in the form and adds the object to DB
  */
 function addStudent($studentName,$course,$studentGrade) {
-    console.log('Inside the addStudent function');
-    $studentId = student_array.length;
     var studentObj = {
-        name: $studentName,
+        student_name: $studentName,
         course: $course,
         grade: $studentGrade,
-        id: $studentId
     };
-    student_array.push(studentObj);
-    console.log('Here is the student_array: ', student_array);
-    sendStudentToDatabase(studentObj);
-    updateData();
-};
-
-function sendStudentToDatabase(studentToAdd) {
-    var sendData = studentToAdd;
-    sendData['api_key'] = 'QBwBMxb8Q8';
-    $.ajax({
-        method: 'POST',
-        url: 'https://s-apis.learningfuze.com/sgt/create',
-        data: sendData,
-        dataType: 'JSON',
-        success: function (response) {
-            console.log(response.success, response.new_id);
-            if (response.success) {
-                studentToAdd['id'] = response.new_id;
-                student_array.push(studentToAdd);
-            } else {
-                alert('Unable to add student.');
-                console.log(response.errors);
-            }
-        }
-    });
+    fbRef.ref('students').push(studentObj);
 };
 
 /*
- * clearAddStudentForm - clears out the form values based on inputIds variable
+ * clearAddStudentForm - Clears the form values
  */
 function clearAddStudentForm(){
-    console.log('Inside the clearAddStudentForm function');
     for(var i = 0; i < inputIds.length; i++) {
         inputIds[i].val('');
     };
 };
 
 /*
- * calculateAverage - loop through the global student array and calculate average grade and return that value
- * @returns {number}
+ * calculateAverage - CALLED FROM THE addStudentsToDom FUNCTION
+ * @returns {AVERAGE}
  */
-function calculateAverage($studentGrade) {
-    var gradesTotal = 0;
-    var averageGrade = 0;
-        for (i = 0; i < student_array.length; i++) {
-            gradesTotal = gradesTotal + parseInt(student_array[i].grade);
-        }
-        averageGrade = gradesTotal / i;
+function calculateAverage(gradeTotal,studentRecords) {
+        averageGrade = gradeTotal / studentRecords;
         averageGrade = Math.round(averageGrade);
-        console.log('Here is the average grade: ' + averageGrade);
-        // $('span.avgGrade').text();
-        if(averageGrade) {
-            $('.avgGrade').text(averageGrade);
-        } else {
-            $('span.avgGrade').text('');
-        }
         return averageGrade;
 };
 
-/*
- * updateData - centralized function to update the average and call student list update
- */
-function updateData() {
-    updateStudentList();
-    calculateAverage();
-}
-
 /**
- * updateStudentList - loops through global student array and appends each objects data into the student-list-container > list-body
+ * addStudentsToDom - Updates the DOM according to current Database values
  */
-function updateStudentList() {
-    console.log('Inside the updateStudentList function');
+function addStudentsToDom(fbDatabase) {
     $('tbody').empty();
-    for(var i= 0; i < student_array.length; i ++) {
-        addStudentToDom(student_array[i],i);
-        console.log('student_array : ', student_array);
+    var index;
+    var gradeTotal =0;
+    var studentRecords = Object.keys(fbDatabase).length;
+    //CREATE TABLE CELLS
+    for(var key in fbDatabase) {
+        fbDatabase.id = key;
+        var $tableRow = $('<tr>');
+        var studentIdAdd = fbDatabase.id;
+        var $tableCellStudentName = $('<td>').html(fbDatabase[key].student_name).addClass('sname');
+        var $tableCellCourse = $('<td>').html(fbDatabase[key].course).addClass('course');
+        var $tableCellStudentGrade = $('<td>').html(fbDatabase[key].grade).addClass('grade');
+        var $tableCellDeleteButton = $('<td>');
+        var $deleteButton = $('<button>', {
+            class: "btn btn-danger btn-xs",
+            text: 'Delete',
+            'index-name': key
+        });
+        var $editButton = $('<button>', {
+           class:"btn btn-info btn-xs edit",
+            text: "Edit",
+            'index-name': key
+        });
+        //APPENDS THE DELETE BUTTON
+        var $deleteStudentRow = $tableCellDeleteButton.append($editButton,$deleteButton);
+        //ADDS TABLE CELLS TO ROW
+        var $studentTableRow = $tableRow.append($tableCellStudentName, $tableCellCourse);
+        $studentTableRow = $studentTableRow.append($tableCellStudentGrade, $deleteStudentRow);
+        //ADDS ROW TO TABLE BODY
+        $studentTableRow.appendTo('tbody');
+
+        //GETS GRADE TOTAL
+        gradeTotal+= fbDatabase[key].grade;
+    };
+    //CALLS CALCULATE AVERAGE FUNCTION AND DISPLAYS
+    var averageGrade = calculateAverage(gradeTotal,studentRecords);
+    displayGradeAverage(averageGrade);
+};
+
+function displayGradeAverage(averageGrade) {
+    if(averageGrade) {
+        $('.avgGrade').text(averageGrade);
+    } else {
+        $('span.avgGrade').text('N/A');
+    }
+};
+
+//CALLED WHEN THE EDIT BUTTON IS CLICKED
+//POPULATES THE FORM WITH DATA
+function populateFormData(sname, course, grade){
+    $('#studentName').val(sname);
+    $('#course').val(course);
+    $('#studentGrade').val(grade);
+};
+
+// CALLED WHEN UPDATE STUDENT BUTTON IS CLICKED
+function updateStudent(id){
+    var updates = {};
+    updates['students/' + id +'/course'] = $('#course').val();
+    updates['students/' + id +'/grade'] = parseInt($('#studentGrade').val());
+    updates['students/' + id +'/student_name'] = $('#studentName').val();
+    fbRef.ref().update(updates);
+};
+
+//Applies click handlers
+function applyClickHandlers() {
+    $('.student-add-form').on('click', '.btn-success', function() {
+        //ADD BUTTON
+        addClicked();
+    }).on('click','.btn-default', function() {
+        //CANCEL BUTTON
+        clearAddStudentForm();
+    }).on('click','.btn-info', function() {
+        //UPDATE BUTTON
+        var studentKey = $(this).attr('index-name');
+        updateStudent(studentKey);
+        $(this).removeClass('btn-info').addClass('btn-success').attr('data-uid', null).text('Add');
+        clearAddStudentForm();
+    });
+    $('table.student-list').on('click', '.btn-danger', function () {
+        //DELETE BUTTON
+        var delete_student = $(this).attr('index-name');
+        removeStudent(delete_student,$(this).closest('tr'));
+    }).on('click','.edit', function() {
+        //EDIT BUTTON
+        var studentKey = $(this).attr('index-name');
+        $('#add-student').removeClass('btn-success').addClass('btn-info').attr('index-name', studentKey).text('Update' +
+            ' Student');
+        var formRowData = getRowData($(this).closest('tr'));
+        populateFormData(formRowData.sname, formRowData.course, formRowData.grade);
+    });
+};
+
+// DELETES STUDENT RECORD AND ROW
+function removeStudent(index, element) {
+    //creates object to send to DB
+    var studentData = getRowData(element);
+    var confirmed = confirm('Are you sure that you want to delete this student? ' + ' ' + studentData.sname);
+    if(confirmed == true) {
+        fbRef.ref('students/'+ index).remove();
     };
 };
 
-/**
- * addStudentToDom - take in a student object, create html elements from the values and then append the elements
- * into the .student_list tbody
- * @param studentObj
- *
- */
-function addStudentToDom(studentObj,index) {
-    console.log('Inside the addStudentToDom function, here is the current student object : ',studentObj);
-    clearAddStudentForm();
-    //CREATE TABLE CELLS
-    var $tableRow = $('<tr>');
-    var $deleteButton = $('<button>', {
-        class: "btn btn-danger btn-xs",
-        text: 'Delete',
-        'index-name': index
-    });
-    studentObj.id = index;
-    var studentIdAdd = studentObj.id;
-    var $tableCellStudentName = $('<td>').html(studentObj.name);
-    var $tableCellCourse = $('<td>').html(studentObj.course);
-    var $tableCellStudentGrade = $('<td>').html(studentObj.grade);
-    var $tableCellDeleteButton = $('<td>');
-
-    console.log('Loggin the studentId : ',studentIdAdd);
-    //DELETE BUTTON
-    var $deleteStudentRow = $tableCellDeleteButton.append($deleteButton);
-    //ADD TABLE CELLS TO ROW
-    var $studentTableRow = $tableRow.append($tableCellStudentName).append($tableCellCourse);
-    $studentTableRow = $studentTableRow.append($tableCellStudentGrade).append($deleteStudentRow);
-    //ADD ROW TO TABLE BODY
-    $studentTableRow.appendTo('tbody');
-    console.log('$studentTableRow is : ', $studentTableRow);
-};
-
-//Add an anonymous function as the click handler to the dynamically created delete button for each student row - (Event Delegation)
-function applyClickHandlers() {
-    $('.btn-primary:first-of-type').click(addClicked);
-    $('.btn-default').click(cancelClicked);
-    $('table.student-list').on('click', '.btn-danger', function () {
-        var delete_student = $(this).attr('index-name');
-        console.log(delete_student);
-        removeStudent(delete_student);
-    });
-};
-
-//removeStudent function that removes the object in the student_array
-// index(element), parent() -- find the parent's index
-function removeStudent(index) {
-    //create object to send to DB
-    console.log('Index of ID to be removed', index);
-    student_array.splice(index, 1);
-    updateData();
-};
+function getRowData(element) {
+    //CALLED FROM THE EDIT BUTTON AND THE DELETE BUTTON
+    //element is the tr tag
+    return {
+        //FINDS THE TEXT OF THE DESCENDENTS OF THE TR,
+        sid: element.find('.sid').text(),
+        sname: element.find('.sname').text(),
+        course: element.find('.course').text(),
+        grade: element.find('.grade').text()
+    };
+}
 
 /**
- * reset - resets the application to initial state. Global variables reset, DOM get reset to initial load state
+ * reset - resets the application to initial state.
  */
 function reset() {
     inputIds = null;
-    student_array = [];
     $('tbody').empty();
-    $.ajax({
-        dataType: 'JSON',
-        data: {api_key: 'QBwBMxb8Q8'},
-        method: 'POST',
-        url: 'https://s-apis.learningfuze.com/sgt/get',
-        success: function (response) {
-            if (response.success) {
-                console.log('success!!');
-                var ajax_array = response.data;
-                for (var i = 0; i < ajax_array.length; i++) {
-                    student_array.push(ajax_array[i]);
-                }
-                updateData();
-            } else {
-                alert('Unable to retrieve data');
-                console.log(response.errors);
-            }
-        }
-    });
 };
 
 /**
@@ -222,7 +205,6 @@ function reset() {
  */
 $(document).ready(function(){
     reset();
-
     $studentName = $('#studentName');
     $course = $('#course');
     $studentGrade = $('#studentGrade');
@@ -232,7 +214,6 @@ $(document).ready(function(){
         $studentGrade
     ];
     applyClickHandlers();
-    updateData();
 });
 
 
