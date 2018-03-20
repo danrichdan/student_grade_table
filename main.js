@@ -164,7 +164,7 @@ function applyClickHandlers() {
         addClicked();
     }).on('click','.btn-default', function() {
         var $addUpdateButton = $('#add-student');
-        console.log($addUpdateButton);
+
         //CANCEL BUTTON
         if($addUpdateButton.hasClass("btn-info")) {
             $addUpdateButton.removeClass('btn-info').addClass('btn-success').attr('data-uid', null).text('Add');
