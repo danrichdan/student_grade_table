@@ -2,7 +2,10 @@
 var $studentName;
 var $course;
 var $studentGrade;
-
+var validationTextDisplayed = false;
+var $validationText;
+var $gradeValidationText;
+var clearStuPossible;
 /**
  * inputIds - id's of the elements that are used to add students
  * @type {string[]}
@@ -33,8 +36,17 @@ fbRef.ref('students').on('value', function(snapshot){
  * addClicked - Event Handler when user clicks the add button
  */
 function addClicked() {
-    if($studentName.val() === ''|| $course.val() === ''|| $studentGrade.val() === '') {
-        alert("Please enter a valid name, course, and grade");
+
+    if($studentName.val() === ''|| $course.val() === ''|| $studentGrade.val() === '' || isNaN($studentGrade.val())) {
+        if(validationTextDisplayed === false) {
+            $validationText = $('<p>').text('Please enter valid data').addClass('validation');
+            $('.student-add-form').append($validationText);
+        };
+        // if(isNaN($studentGrade.val()) === true){
+        //     $gradeValidationText = $('<p>').text('Please enter valid grade').addClass('validation');
+        //     $('.student-add-form').append($validationText);
+        // };
+        validationTextDisplayed = true;
     } else {
         var studentGrade = parseInt($studentGrade.val());
         addStudent($studentName.val(),$course.val(),studentGrade);
@@ -58,9 +70,13 @@ function addStudent($studentName,$course,$studentGrade) {
  * clearAddStudentForm - Clears the form values
  */
 function clearAddStudentForm(){
-    for(var i = 0; i < inputIds.length; i++) {
-        inputIds[i].val('');
-    };
+        for (var i = 0; i < inputIds.length; i++) {
+            inputIds[i].val('');
+        };
+        if(validationTextDisplayed) {
+            $validationText.remove();
+            validationTextDisplayed = false;
+        }
 };
 
 /*
@@ -147,8 +163,14 @@ function applyClickHandlers() {
         //ADD BUTTON
         addClicked();
     }).on('click','.btn-default', function() {
+        var $addUpdateButton = $('#add-student');
+        console.log($addUpdateButton);
         //CANCEL BUTTON
+        if($addUpdateButton.hasClass("btn-info")) {
+            $addUpdateButton.removeClass('btn-info').addClass('btn-success').attr('data-uid', null).text('Add');
+        }
         clearAddStudentForm();
+
     }).on('click','.btn-info', function() {
         //UPDATE BUTTON
         var studentKey = $(this).attr('index-name');
@@ -215,6 +237,7 @@ $(document).ready(function(){
     ];
     applyClickHandlers();
 });
+
 
 
 

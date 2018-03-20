@@ -2,6 +2,16 @@ tr:nth-of-type(even) {
     background-color: #e6e6e6;
 }
 
+.validation {
+    background-color: #ffff99;
+    color: tomato;
+    margin-top: 10px;
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid;
+}
+
 /*MEDIA QUERY*/
 
 @media (min-width: 349px) and (max-width: 374px) {
