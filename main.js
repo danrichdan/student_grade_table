@@ -17,11 +17,7 @@ var inputIds;
  */
 // Adds Firebase config data
 var config = {
-    apiKey: "AIzaSyAPqciv9eDuorGWqwu3U5DP7DcthjEH5Rc",
-    authDomain: "student-grade-table-1f915.firebaseapp.com",
-    databaseURL: "https://student-grade-table-1f915.firebaseio.com",
-    storageBucket: "student-grade-table-1f915.appspot.com",
-    messagingSenderId: "436578119423"
+    
 };
 // Initializes Firebase
 firebase.initializeApp(config);
